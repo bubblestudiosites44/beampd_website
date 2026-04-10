@@ -15,6 +15,7 @@ const categoryColors = {
 };
 
 export default function PluginCard({ plugin, index }) {
+  const fallbackImage = "/hithtesteets.png";
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -26,7 +27,15 @@ export default function PluginCard({ plugin, index }) {
       {/* Banner */}
       <div className="relative h-36 bg-gradient-to-br from-secondary to-muted overflow-hidden">
         {plugin.image_url ? (
-          <img src={plugin.image_url} alt={plugin.name} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" />
+          <img
+            src={plugin.image_url}
+            alt={plugin.name}
+            className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = fallbackImage;
+            }}
+          />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <span className="font-heading text-5xl font-bold text-border select-none">{plugin.name[0]}</span>

@@ -12,6 +12,10 @@ export default function HeroSection({ heroImage, onDownloadClick }) {
           src={heroImage}
           alt="Police vehicle with emergency lights"
           className="w-full h-full object-cover"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = "/hithtesteets.png";
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background" />
         <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-accent/10" />

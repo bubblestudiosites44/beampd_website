@@ -1,8 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const SUPABASE_STORAGE_BUCKET = import.meta.env.VITE_SUPABASE_STORAGE_BUCKET || "uploads";
+const FALLBACK_SUPABASE_URL = "https://hbbtegiecallsiajrunj.supabase.co";
+const FALLBACK_SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhiYnRlZ2llY2FsbHNpYWpydW5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE2NTEzOTAsImV4cCI6MjA2NzIyNzM5MH0.COj1AuZKSAtTjyghMYoPWfzvF2074tI6iAt2Usnj6JM";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || FALLBACK_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || FALLBACK_SUPABASE_ANON_KEY;
+const SUPABASE_STORAGE_BUCKET = import.meta.env.VITE_SUPABASE_STORAGE_BUCKET || "BeamPD";
 
 const hasSupabaseConfig = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 

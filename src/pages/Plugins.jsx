@@ -9,19 +9,61 @@ import { motion } from "framer-motion";
 import { getSession, logOut } from "@/lib/pluginAuth";
 import { db } from "@/api/base44Client";
 
+const FALLBACK_PLUGIN_IMAGE = "/hithtesteets.png";
+const FALLBACK_PLUGIN_DOWNLOAD =
+  "https://hbbtegiecallsiajrunj.supabase.co/storage/v1/object/public/BeamPD/BeamPD_Response.zip";
+
+const fallbackPlugins = [
+  {
+    id: "fallback-beampd-plugin",
+    name: "BeamPD Official Plugin Pack",
+    category: "Callout Pack",
+    author: "BeamPD Team",
+    version: "1.0.0",
+    description: "Official plugin pack fallback while database content is loading.",
+    long_description:
+      "This fallback plugin appears if your database query fails so users can still install BeamPD assets.",
+    image_url: FALLBACK_PLUGIN_IMAGE,
+    download_url: FALLBACK_PLUGIN_DOWNLOAD,
+    downloads: 0,
+    views: 0,
+    rating: 0,
+    rating_count: 0,
+    is_public: true,
+  },
+];
+
 export default function Plugins() {
   const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState("All");
   const [search, setSearch] = useState("");
   const [plugins, setPlugins] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [session, setSession] = useState(getSession());
 
   useEffect(() => {
-    db.entities.Plugin.filter({ is_public: true }, "-created_date", 100).then((data) => {
-      setPlugins(data);
-      setLoading(false);
-    });
+    let isMounted = true;
+    const loadPlugins = async () => {
+      setLoading(true);
+      setLoadError("");
+      try {
+        const data = await db.entities.Plugin.filter({ is_public: true }, "-created_date", 100);
+        if (!isMounted) return;
+        setPlugins(data);
+      } catch (error) {
+        console.error("Failed to load plugins:", error);
+        if (!isMounted) return;
+        setLoadError("Could not load plugins from database. Showing fallback content.");
+        setPlugins(fallbackPlugins);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+    loadPlugins();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleLogOut = () => {
@@ -93,6 +135,11 @@ export default function Plugins() {
 
       {/* Filters + Search */}
       <div className="max-w-7xl mx-auto px-6 pb-6">
+        {loadError && (
+          <div className="mb-6 rounded-xl bg-secondary border border-border px-4 py-3 text-sm font-body text-muted-foreground">
+            {loadError}
+          </div>
+        )}
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-8">
           <PluginFilters active={activeFilter} onChange={setActiveFilter} />
           <input

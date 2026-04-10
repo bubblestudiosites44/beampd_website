@@ -31,6 +31,10 @@ export default function ShowcaseSection({ showcaseImage }) {
             src={showcaseImage}
             alt="BeamPD Response gameplay showcase"
             className="w-full h-auto"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = "/hithtesteets.png";
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
           <div className="absolute bottom-6 left-6 right-6">

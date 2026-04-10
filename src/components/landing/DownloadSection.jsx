@@ -83,6 +83,22 @@ function DownloadCard({ entry }) {
   );
 }
 
+function normalizeDownloadEntry(entry) {
+  if (!entry) return entry;
+  const url = entry.download_url || "";
+  const hasPlaceholderUrl = typeof url === "string" && url.includes("example.com");
+
+  if (entry.type === "manual" && (!url || hasPlaceholderUrl)) {
+    return { ...entry, download_url: OFFICIAL_FALLBACK_URL };
+  }
+
+  if (entry.type === "auto" && hasPlaceholderUrl) {
+    return { ...entry, download_url: "#", coming_soon: true };
+  }
+
+  return entry;
+}
+
 export default function DownloadSection() {
   const [downloads, setDownloads] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -95,7 +111,9 @@ export default function DownloadSection() {
       setLoading(true);
       try {
         const data = await db.entities.BeamPDDownload.filter({ is_active: true });
-        const sorted = [...(data || [])].sort((a, b) => (a.type === "auto" ? -1 : 1));
+        const sorted = [...(data || [])]
+          .map(normalizeDownloadEntry)
+          .sort((a, b) => (a.type === "auto" ? -1 : 1));
         const hasOfficialZip = sorted.some((entry) =>
           typeof entry.download_url === "string" && entry.download_url.includes("BeamPD_Response.zip")
         );
