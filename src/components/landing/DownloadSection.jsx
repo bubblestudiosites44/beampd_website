@@ -3,6 +3,9 @@ import { motion } from "framer-motion";
 import { Download, FileArchive, Monitor, CheckCircle, Shield } from "lucide-react";
 import { db } from "@/api/base44Client";
 
+const OFFICIAL_FALLBACK_URL =
+  "https://hbbtegiecallsiajrunj.supabase.co/storage/v1/object/public/BeamPD/BeamPD_Response.zip";
+
 const typeConfig = {
   auto: {
     icon: Monitor,
@@ -82,12 +85,39 @@ function DownloadCard({ entry }) {
 
 export default function DownloadSection() {
   const [downloads, setDownloads] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showFallbackInstall, setShowFallbackInstall] = useState(false);
 
   useEffect(() => {
-    db.entities.BeamPDDownload.filter({ is_active: true }).then((data) => {
-      // sort: auto first
-      setDownloads(data.sort((a, b) => (a.type === "auto" ? -1 : 1)));
-    });
+    let isMounted = true;
+
+    const loadDownloads = async () => {
+      setLoading(true);
+      try {
+        const data = await db.entities.BeamPDDownload.filter({ is_active: true });
+        const sorted = [...(data || [])].sort((a, b) => (a.type === "auto" ? -1 : 1));
+        const hasOfficialZip = sorted.some((entry) =>
+          typeof entry.download_url === "string" && entry.download_url.includes("BeamPD_Response.zip")
+        );
+
+        if (!isMounted) return;
+        setDownloads(sorted);
+        setShowFallbackInstall(!hasOfficialZip);
+      } catch (error) {
+        console.error("Failed to load download entries:", error);
+        if (!isMounted) return;
+        setDownloads([]);
+        setShowFallbackInstall(true);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    loadDownloads();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (
@@ -111,24 +141,53 @@ export default function DownloadSection() {
           </p>
         </motion.div>
 
-        {downloads.length === 0 ? (
+        {loading ? (
           <div className="py-16 flex justify-center">
             <div className="w-8 h-8 border-4 border-border border-t-primary rounded-full animate-spin" />
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {downloads.map((entry, i) => (
-              <motion.div
-                key={entry.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-              >
-                <DownloadCard entry={entry} />
-              </motion.div>
-            ))}
+        ) : downloads.length === 0 ? (
+          <div className="rounded-2xl bg-card border border-border p-8 text-center">
+            <p className="font-body text-muted-foreground mb-4">
+              Not loading? Install it here.
+            </p>
+            <a
+              href={OFFICIAL_FALLBACK_URL}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 font-heading font-bold text-base tracking-wide rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all"
+            >
+              <Download className="w-5 h-5" />
+              Install BeamPD
+            </a>
           </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {downloads.map((entry, i) => (
+                <motion.div
+                  key={entry.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                >
+                  <DownloadCard entry={entry} />
+                </motion.div>
+              ))}
+            </div>
+            {showFallbackInstall && (
+              <div className="mt-6 rounded-2xl bg-card border border-border p-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <p className="font-body text-sm text-muted-foreground">
+                  Not loading? Install it here.
+                </p>
+                <a
+                  href={OFFICIAL_FALLBACK_URL}
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 font-heading font-bold text-sm tracking-wide rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all"
+                >
+                  <Download className="w-4 h-4" />
+                  Install BeamPD
+                </a>
+              </div>
+            )}
+          </>
         )}
 
         <motion.div
