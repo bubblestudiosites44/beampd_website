@@ -1,0 +1,102 @@
+{
+  "name": "Plugin",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Plugin display name"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "Callout Pack",
+        "Vehicle Pack",
+        "Map Add-on",
+        "Sound Pack",
+        "UI Skin",
+        "Script & Logic",
+        "Other"
+      ],
+      "description": "Plugin category"
+    },
+    "author": {
+      "type": "string",
+      "description": "Plugin author / creator"
+    },
+    "author_account_id": {
+      "type": "string",
+      "description": "ID of the PluginAccount that submitted this plugin"
+    },
+    "version": {
+      "type": "string",
+      "description": "e.g. 1.0.0"
+    },
+    "description": {
+      "type": "string",
+      "description": "Short description shown on the plugin card"
+    },
+    "long_description": {
+      "type": "string",
+      "description": "Full description shown on the plugin detail page (supports markdown)"
+    },
+    "download_url": {
+      "type": "string",
+      "description": "Direct .zip download URL"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Banner image URL for the plugin"
+    },
+    "file_size": {
+      "type": "string",
+      "description": "e.g. 12 MB"
+    },
+    "beamng_version": {
+      "type": "string",
+      "description": "Minimum BeamNG.drive version required"
+    },
+    "beampd_version": {
+      "type": "string",
+      "description": "Minimum BeamPD: Response version required"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Extra searchable tags"
+    },
+    "downloads": {
+      "type": "number",
+      "default": 0,
+      "description": "Total download count"
+    },
+    "views": {
+      "type": "number",
+      "default": 0,
+      "description": "Total view count"
+    },
+    "rating": {
+      "type": "number",
+      "default": 0,
+      "description": "Average star rating (1-5)"
+    },
+    "rating_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of ratings submitted"
+    },
+    "is_public": {
+      "type": "boolean",
+      "default": true,
+      "description": "If false, plugin is hidden from the public listing"
+    }
+  },
+  "required": [
+    "name",
+    "category",
+    "author",
+    "version",
+    "description"
+  ]
+}

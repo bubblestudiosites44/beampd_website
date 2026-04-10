@@ -1,0 +1,4 @@
+id	label	type	version	download_url	file_name	file_size	changelog	is_active	coming_soon
+ffffffff-ffff-ffff-ffff-ffffffffffff	Automatic Install	auto	1.0.0	https://downloads.example.com/BeamPD_Response_Setup.exe	BeamPD_Response_Setup.exe	145 MB	Initial public release with auto installer	true	false
+99999999-9999-9999-9999-999999999999	Manual Install	manual	1.0.0	https://downloads.example.com/BeamPD_Response.zip	BeamPD_Response.zip	139 MB	Initial public release zip package	true	false
+

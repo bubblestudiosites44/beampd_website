@@ -1,0 +1,54 @@
+{
+  "name": "BeamPDDownload",
+  "type": "object",
+  "properties": {
+    "label": {
+      "type": "string",
+      "description": "Display label, e.g. 'Automatic Install' or 'Manual Install'"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "auto",
+        "manual"
+      ],
+      "description": "auto = .exe installer, manual = .zip"
+    },
+    "version": {
+      "type": "string",
+      "description": "Version string shown to users, e.g. v1.0.0"
+    },
+    "download_url": {
+      "type": "string",
+      "description": "Direct download URL"
+    },
+    "file_name": {
+      "type": "string",
+      "description": "Filename shown under button, e.g. BeamPD_Response_Setup.exe"
+    },
+    "file_size": {
+      "type": "string",
+      "description": "e.g. 45 MB"
+    },
+    "changelog": {
+      "type": "string",
+      "description": "What's new in this version"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Only active entries are shown on the site"
+    },
+    "coming_soon": {
+      "type": "boolean",
+      "default": false,
+      "description": "If true, shows 'Coming Soon' instead of the download button and disables downloading"
+    }
+  },
+  "required": [
+    "label",
+    "type",
+    "version",
+    "download_url"
+  ]
+}

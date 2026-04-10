@@ -1,0 +1,27 @@
+{
+  "name": "PluginReview",
+  "type": "object",
+  "properties": {
+    "plugin_id": {
+      "type": "string",
+      "description": "ID of the plugin being reviewed"
+    },
+    "reviewer_name": {
+      "type": "string",
+      "description": "Display name of the reviewer"
+    },
+    "rating": {
+      "type": "number",
+      "description": "Star rating 1-5"
+    },
+    "comment": {
+      "type": "string",
+      "description": "Review text"
+    }
+  },
+  "required": [
+    "plugin_id",
+    "reviewer_name",
+    "rating"
+  ]
+}

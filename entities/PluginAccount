@@ -1,0 +1,23 @@
+{
+  "name": "PluginAccount",
+  "type": "object",
+  "properties": {
+    "username": {
+      "type": "string",
+      "description": "Unique username chosen at signup"
+    },
+    "email": {
+      "type": "string",
+      "description": "User email address"
+    },
+    "password_hash": {
+      "type": "string",
+      "description": "SHA-256 hashed password"
+    }
+  },
+  "required": [
+    "username",
+    "email",
+    "password_hash"
+  ]
+}

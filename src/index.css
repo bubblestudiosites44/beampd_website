@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Hide the Base44 edit badge */
+#base44-edit-badge {
+  display: none !important;
+}
+
+@layer base {
+  :root {
+    --background: 220 20% 6%;
+    --foreground: 210 20% 95%;
+    --card: 220 18% 10%;
+    --card-foreground: 210 20% 95%;
+    --popover: 220 18% 10%;
+    --popover-foreground: 210 20% 95%;
+    --primary: 220 80% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 15% 16%;
+    --secondary-foreground: 210 20% 90%;
+    --muted: 220 15% 14%;
+    --muted-foreground: 215 15% 55%;
+    --accent: 0 85% 55%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 15% 18%;
+    --input: 220 15% 18%;
+    --ring: 220 80% 55%;
+    --chart-1: 220 80% 55%;
+    --chart-2: 0 85% 55%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.75rem;
+    --font-heading: 'Rajdhani', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --sidebar-background: 220 18% 8%;
+    --sidebar-foreground: 210 20% 95%;
+    --sidebar-primary: 220 80% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 15% 16%;
+    --sidebar-accent-foreground: 210 20% 90%;
+    --sidebar-border: 220 15% 18%;
+    --sidebar-ring: 220 80% 55%;
+  }
+
+  .dark {
+    --background: 220 20% 6%;
+    --foreground: 210 20% 95%;
+    --card: 220 18% 10%;
+    --card-foreground: 210 20% 95%;
+    --popover: 220 18% 10%;
+    --popover-foreground: 210 20% 95%;
+    --primary: 220 80% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 15% 16%;
+    --secondary-foreground: 210 20% 90%;
+    --muted: 220 15% 14%;
+    --muted-foreground: 215 15% 55%;
+    --accent: 0 85% 55%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 15% 18%;
+    --input: 220 15% 18%;
+    --ring: 220 80% 55%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --sidebar-background: 220 18% 8%;
+    --sidebar-foreground: 210 20% 95%;
+    --sidebar-primary: 220 80% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 15% 16%;
+    --sidebar-accent-foreground: 210 20% 90%;
+    --sidebar-border: 220 15% 18%;
+    --sidebar-ring: 220 80% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
