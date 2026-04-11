@@ -1,0 +1,9 @@
+{
+  "name": "BeamPD: Response",
+  "short_name": "BeamPD",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#05070B",
+  "theme_color": "#0F172A",
+  "icons": []
+}

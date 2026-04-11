@@ -1,7 +1,8 @@
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -12,6 +13,42 @@ import Docs from './pages/Docs';
 import PluginLogin from './pages/PluginLogin';
 import PublishPlugin from './pages/PublishPlugin';
 // Add page imports here
+
+const CANONICAL_ORIGIN = "https://beampd.xirako.com";
+
+function upsertHeadTag(tagName, selector, updater) {
+  let el = document.head.querySelector(selector);
+  if (!el) {
+    el = document.createElement(tagName);
+    document.head.appendChild(el);
+  }
+  updater(el);
+}
+
+const RouteSeo = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    const trimmedPath = location.pathname.replace(/\/+$/, "");
+    const normalizedPath = trimmedPath === "" ? "/" : trimmedPath;
+    const canonicalUrl = `${CANONICAL_ORIGIN}${normalizedPath}`;
+
+    upsertHeadTag("link", 'link[rel="canonical"]', (el) => {
+      el.setAttribute("rel", "canonical");
+      el.setAttribute("href", canonicalUrl);
+    });
+
+    const noIndexPaths = new Set(["/plugins/login", "/plugins/publish"]);
+    const robotsContent = noIndexPaths.has(normalizedPath) ? "noindex, nofollow" : "index, follow";
+
+    upsertHeadTag("meta", 'meta[name="robots"]', (el) => {
+      el.setAttribute("name", "robots");
+      el.setAttribute("content", robotsContent);
+    });
+  }, [location.pathname]);
+
+  return null;
+};
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -56,6 +93,7 @@ function App() {
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
         <Router>
+          <RouteSeo />
           <AuthenticatedApp />
         </Router>
         <Toaster />
