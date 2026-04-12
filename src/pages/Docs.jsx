@@ -145,15 +145,152 @@ BeamPD: Response supports multiplayer patrol sessions via BeamMP.
 Plugins are community-made add-ons that extend BeamPD: Response with new callouts, vehicles, sounds, and more.
 
 ### How to Install a Plugin
-1. Download the plugin \`.zip\` from the Plugins page.
-2. Open \`BeamPD_Response.zip\` (the main mod archive in your mods folder).
-3. Place the plugin's \`.lua\` script directly into the \`plugins/\` folder inside the zip.
-4. Save and close the archive, then launch or reload BeamNG.drive — BeamPD will automatically detect and load all plugins found in that folder.
+1. Download the plugin zip from the Plugins page.
+2. Open BeamPD_Response.zip (the main mod archive in your mods folder).
+3. Place the plugin .lua script directly into the plugins/ folder inside the zip.
+4. Save and close the archive, then launch or reload BeamNG.drive. BeamPD automatically detects and loads all plugin files in that folder.
 
 ### Notes
-- Plugin file names must not conflict with other installed plugins.
-- If a plugin isn't loading, double-check it's inside \`BeamPD_Response.zip/plugins/\` and that the mod is enabled in the BeamNG.drive **Mod Manager**.
-- Some plugins may have additional dependencies listed in their description — install those first.
+- BeamPD only loads files ending in .lua from plugins/.
+- The loader ignores files named __.lua and initializer.lua.
+- If Plugins Go Here.txt is still in that folder, you can remove it after installing your first plugin.
+- Plugin file names should be unique and easy to identify.
+- If a plugin is not loading, double-check it is inside BeamPD_Response.zip/plugins/ and that the mod is enabled in BeamNG.drive Mod Manager.
+- Some plugins may require extra dependencies listed by the plugin author.
+`,
+  },
+  {
+    id: "creating-plugins",
+    title: "Creating Plugins",
+    content: `## Creating Plugins
+
+BeamPD plugins are Lua files placed in the plugins/ folder that return a table.
+
+### Minimum Plugin File
+~~~lua
+local plugin = {
+  name = "My First Plugin"
+}
+
+return plugin
+~~~
+
+### Example Plugin (Callout + Hook)
+~~~lua
+local plugin = {
+  name = "Downtown Alert",
+
+  callouts = {
+    {
+      id = "downtown_alert",
+      message = "Suspicious activity reported near %s",
+      location = {
+        name = "Downtown Parking",
+        pos = { x = -725.0, y = 82.0, z = 119.0 }
+      },
+      routePos = { x = -725.0, y = 82.0, z = 119.0 },
+
+      onDispatchCreated = function(self, activeCall, api) end,
+      onAccept = function(self, activeCall, api) end,
+      onUpdate = function(self, dtReal, dtSim, dtRaw, activeCall, api) end,
+      onEnd = function(self, reason, activeCall, api) end
+    }
+  },
+
+  hooks = {
+    onCallAccepted = function(activeCall, api) end
+  },
+
+  onLoad = function(self, api, context) end
+}
+
+return plugin
+~~~
+
+### Load Rules
+- Place plugin files inside BeamPD_Response.zip/plugins/.
+- Files must end in .lua.
+- Files named __.lua or initializer.lua are ignored by the loader.
+- Use unique IDs for custom callouts, for example myplugin_bank_robbery.
+`,
+  },
+  {
+    id: "plugin-api",
+    title: "Plugin API",
+    content: `## Plugin API
+
+The following plugin keys are supported by the BeamPD v0.6 loader.
+
+| Key | Type | Purpose |
+|---|---|---|
+| name | string | Plugin display/debug name |
+| vehicles | table[] | Vehicle definitions registered with BeamPD |
+| maps | table[] | Map locations merged into dispatch pools |
+| callouts | table[] | Advanced callouts injected into dispatch |
+| hooks | table | Event callbacks keyed by event name |
+| register | function | Custom registration function (optional) |
+| scripts | function[] | Additional setup callbacks |
+| onLoad | function | Called after plugin registration |
+| onKeyPressed | function | Convenience key event callback |
+| onUIEvent | function | Convenience UI event callback |
+
+### Hook Events
+- onDispatchCreated (activeCall, api)
+- onCallAccepted (currentCallout, api)
+- onCalloutUpdate (dtReal, dtSim, dtRaw, currentCallout, api)
+- onCallEnded (reason, endedCall, api)
+- onTowEvent (payload, api)
+- onKeyPressed (key, api)
+- onUIEvent (eventName, data, api)
+
+### Useful API Methods
+- api.hook(eventName, callback)
+- api.addVehicle(def)
+- api.addMap(name, mapPath, locations)
+- api.addAdvancedCallout(callout)
+- api.getPlayerVehicle()
+- api.getDistanceToPlayer(vehicleOrId)
+- api.spawnVehicle(model, position, options)
+- api.deleteVehicle(vehicleOrId)
+- api.setPursuit(vehicleOrId, shouldFlee)
+- api.endCallout(reason)
+
+### Map Location Example
+~~~lua
+maps = {
+  {
+    name = "West Coast USA",
+    mapPath = "/levels/west_coast_usa/",
+    locations = {
+      {
+        name = "Marina District",
+        pos = { x = -910.0, y = 140.0, z = 112.0 },
+        area = "city"
+      }
+    }
+  }
+}
+~~~
+`,
+  },
+  {
+    id: "plugin-troubleshooting",
+    title: "Plugin Troubleshooting",
+    content: `## Plugin Troubleshooting
+
+### Plugin Does Not Load
+1. Confirm the file is inside BeamPD_Response.zip/plugins/.
+2. Confirm the file extension is .lua.
+3. Confirm the file returns a Lua table with return plugin.
+4. Confirm the file name is not __.lua or initializer.lua.
+
+### Callout Never Appears
+- Verify your callout has a unique id, a valid location.name, and numeric location.pos values.
+- BeamPD mixes built-in and plugin callouts, so plugin callouts are probabilistic.
+
+### Runtime Errors
+- BeamPD logs plugin failures with messages such as Plugin load failed (...), Plugin register failed (...), and Plugin hook error (...).
+- Build plugins incrementally and test one file at a time.
 `,
   },
   {
