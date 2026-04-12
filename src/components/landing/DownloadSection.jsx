@@ -221,3 +221,4 @@ export default function DownloadSection() {
     </section>
   );
 }
+{/* fixed download link issue */}
