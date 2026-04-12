@@ -37,3 +37,4 @@ Security hardening:
   - `plugin`
   - `plugin_review`
 - It also introduces `auth_user_id` on `plugin_account` so plugin ownership can be tied to Supabase Auth users.
+- Re-run `06_supabase_auth_and_rls.sql` after updates to keep helper auth functions/policies in sync (safe to re-run; uses idempotent `drop/create` patterns).

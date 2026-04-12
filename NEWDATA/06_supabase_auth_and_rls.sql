@@ -57,11 +57,18 @@ set search_path = public
 as $$
 declare
   desired_username text;
+  existing_account_id uuid;
+  safe_email text;
 begin
+  safe_email := nullif(trim(coalesce(new.email, '')), '');
+  if safe_email is null then
+    safe_email := 'user_' || substr(new.id::text, 1, 8) || '@local.invalid';
+  end if;
+
   desired_username := nullif(trim(new.raw_user_meta_data ->> 'username'), '');
 
   if desired_username is null then
-    desired_username := split_part(coalesce(new.email, ''), '@', 1);
+    desired_username := split_part(safe_email, '@', 1);
   end if;
 
   if desired_username is null or desired_username = '' then
@@ -77,6 +84,25 @@ begin
     desired_username := desired_username || '_' || substr(new.id::text, 1, 6);
   end if;
 
+  -- If a legacy row already exists for this email, attach it to the auth user
+  -- instead of trying to insert a duplicate email/username row.
+  select pa.id
+  into existing_account_id
+  from public.plugin_account pa
+  where lower(pa.email) = lower(safe_email)
+  limit 1;
+
+  if existing_account_id is not null then
+    update public.plugin_account
+    set
+      auth_user_id = new.id,
+      email = safe_email,
+      updated_date = now()
+    where id = existing_account_id;
+
+    return new;
+  end if;
+
   insert into public.plugin_account (
     username,
     email,
@@ -85,13 +111,13 @@ begin
   )
   values (
     desired_username,
-    coalesce(new.email, ''),
+    safe_email,
     null,
     new.id
   )
   on conflict (auth_user_id) do update
   set
-    email = excluded.email,
+    email = safe_email,
     updated_date = now();
 
   return new;
@@ -132,6 +158,40 @@ for update
 to authenticated
 using (auth_user_id = auth.uid())
 with check (auth_user_id = auth.uid());
+
+-- Allow internal auth-system writes used during signup trigger flows.
+drop policy if exists plugin_account_insert_system on public.plugin_account;
+create policy plugin_account_insert_system
+on public.plugin_account
+for insert
+to service_role, supabase_auth_admin
+with check (true);
+
+drop policy if exists plugin_account_update_system on public.plugin_account;
+create policy plugin_account_update_system
+on public.plugin_account
+for update
+to service_role, supabase_auth_admin
+using (true)
+with check (true);
+
+-- Username -> email resolver for login UX ("username OR email").
+create or replace function public.resolve_plugin_login_email(p_identifier text)
+returns text
+language sql
+security definer
+set search_path = public
+as $$
+  select pa.email
+  from public.plugin_account pa
+  where lower(pa.username) = lower(trim(p_identifier))
+     or lower(pa.email) = lower(trim(p_identifier))
+  order by pa.created_date asc
+  limit 1
+$$;
+
+revoke all on function public.resolve_plugin_login_email(text) from public;
+grant execute on function public.resolve_plugin_login_email(text) to anon, authenticated;
 
 --------------------------------------------------------------------------------
 -- C) plugin RLS
@@ -297,4 +357,3 @@ using (
 -- No statements for public.beampd_download in this migration by design.
 
 commit;
-

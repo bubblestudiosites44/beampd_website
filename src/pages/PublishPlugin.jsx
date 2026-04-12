@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Shield, ArrowLeft, Upload, Loader2, Lock, Globe, FileArchive, X, CheckCircle2, AlertTriangle, Image } from "lucide-react";
 import { motion } from "framer-motion";
 
-import { getSession } from "@/lib/pluginAuth";
+import { getSession, hydrateSession } from "@/lib/pluginAuth";
 import { db } from "@/api/base44Client";
 
 const CATEGORIES = ["Callout Pack", "Vehicle Pack", "Map Add-on", "Sound Pack", "UI Skin", "Script & Logic", "Other"];
@@ -103,7 +103,8 @@ function FileDrop({ label, accept, file, setFile, icon: Icon, required }) {
 
 export default function PublishPlugin() {
   const navigate = useNavigate();
-  const session = getSession();
+  const [session, setSession] = useState(getSession());
+  const [checkingSession, setCheckingSession] = useState(true);
   const [form, setForm] = useState(empty);
   const [pluginFile, setPluginFile] = useState(null);
   const [imageFile, setImageFile] = useState(null);
@@ -113,8 +114,30 @@ export default function PublishPlugin() {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    if (!session) navigate("/plugins/login");
-  }, []);
+    let isMounted = true;
+
+    const loadSession = async () => {
+      try {
+        const current = await hydrateSession();
+        if (!isMounted) return;
+        setSession(current);
+        if (!current) navigate("/plugins/login");
+      } catch {
+        if (!isMounted) return;
+        const cached = getSession();
+        setSession(cached);
+        if (!cached) navigate("/plugins/login");
+      } finally {
+        if (isMounted) setCheckingSession(false);
+      }
+    };
+
+    loadSession();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [navigate]);
 
   const set = (key) => (e) => {
     const val = e.target.type === "checkbox" ? e.target.checked : e.target.value;
@@ -123,6 +146,10 @@ export default function PublishPlugin() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!session) {
+      setError("Please sign in to publish.");
+      return;
+    }
     if (!pluginFile) { setError("Please upload a plugin .zip file."); return; }
     setError("");
     setLoading(true);
@@ -188,6 +215,14 @@ export default function PublishPlugin() {
             Publish Another
           </button>
         </div>
+      </div>
+    );
+  }
+
+  if (checkingSession) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-border border-t-primary rounded-full animate-spin" />
       </div>
     );
   }

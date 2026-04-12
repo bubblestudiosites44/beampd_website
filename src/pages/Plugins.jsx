@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import { Shield, ArrowLeft, Package, LogIn } from "lucide-react";
 import PluginCard from "../components/plugins/PluginCard";
 import PluginFilters from "../components/plugins/PluginFilters";
 import UserMenu from "../components/plugins/UserMenu";
 import { motion } from "framer-motion";
-import { getSession, logOut } from "@/lib/pluginAuth";
+import { getSession, hydrateSession, logOut } from "@/lib/pluginAuth";
 import { db } from "@/api/base44Client";
 
 const FALLBACK_PLUGIN_IMAGE = "/hithtesteets.png";
@@ -34,7 +34,6 @@ const fallbackPlugins = [
 ];
 
 export default function Plugins() {
-  const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState("All");
   const [search, setSearch] = useState("");
   const [plugins, setPlugins] = useState([]);
@@ -61,6 +60,25 @@ export default function Plugins() {
       }
     };
     loadPlugins();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    const syncAuthSession = async () => {
+      try {
+        const current = await hydrateSession();
+        if (!isMounted) return;
+        setSession(current);
+      } catch {
+        if (!isMounted) return;
+        setSession(getSession());
+      }
+    };
+
+    syncAuthSession();
     return () => {
       isMounted = false;
     };
