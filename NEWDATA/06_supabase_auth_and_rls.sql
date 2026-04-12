@@ -58,6 +58,7 @@ as $$
 declare
   desired_username text;
   existing_account_id uuid;
+  existing_owned_account_id uuid;
   safe_email text;
 begin
   safe_email := nullif(trim(coalesce(new.email, '')), '');
@@ -73,6 +74,24 @@ begin
 
   if desired_username is null or desired_username = '' then
     desired_username := 'user_' || substr(new.id::text, 1, 8);
+  end if;
+
+  -- If a row already belongs to this auth user, keep it in sync.
+  select pa.id
+  into existing_owned_account_id
+  from public.plugin_account pa
+  where pa.auth_user_id = new.id
+  limit 1;
+
+  if existing_owned_account_id is not null then
+    update public.plugin_account
+    set
+      username = coalesce(nullif(trim(username), ''), desired_username),
+      email = safe_email,
+      updated_date = now()
+    where id = existing_owned_account_id;
+
+    return new;
   end if;
 
   if exists (
@@ -112,7 +131,7 @@ begin
   values (
     desired_username,
     safe_email,
-    null,
+    '',
     new.id
   )
   on conflict (auth_user_id) do update
@@ -121,6 +140,31 @@ begin
     updated_date = now();
 
   return new;
+exception
+  when unique_violation then
+    -- Last-resort fallback that guarantees a unique username per auth user.
+    insert into public.plugin_account (
+      username,
+      email,
+      password_hash,
+      auth_user_id
+    )
+    values (
+      'user_' || replace(substr(new.id::text, 1, 12), '-', ''),
+      safe_email,
+      '',
+      new.id
+    )
+    on conflict (auth_user_id) do update
+    set
+      email = safe_email,
+      updated_date = now();
+
+    return new;
+  when others then
+    -- Do not block auth signup if profile sync fails; app can self-heal profile later.
+    raise warning 'handle_new_auth_user failed for auth user %: %', new.id, sqlerrm;
+    return new;
 end;
 $$;
 

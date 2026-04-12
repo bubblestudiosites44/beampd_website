@@ -80,7 +80,7 @@ async function ensureOwnPluginAccount(user, preferredUsername = "") {
     auth_user_id: user.id,
     username: fallbackUsername,
     email: email || `${String(user.id).slice(0, 8)}@local.invalid`,
-    password_hash: null,
+    password_hash: "",
   };
 
   const { error: insertError } = await supabase.from("plugin_account").insert(insertPayload);
@@ -203,4 +203,3 @@ export function getSession() {
     return null;
   }
 }
-
