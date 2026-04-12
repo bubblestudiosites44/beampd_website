@@ -6,6 +6,7 @@ Run these files in order in the Supabase SQL editor:
 4. `03_plugin_review.sql`
 5. `04_beampd_download.sql`
 6. `05_storage_uploads_bucket.sql` (optional but needed for upload from frontend)
+7. `06_supabase_auth_and_rls.sql` (recommended hardening: Supabase Auth + RLS)
 
 Entity-to-table mapping:
 - `PluginAccount` -> `public.plugin_account`
@@ -28,3 +29,11 @@ Paste order:
 Storage:
 - If you want plugin/image uploads to work from the site, also run `05_storage_uploads_bucket.sql`.
 - This creates a public `uploads` storage bucket and policies used by `db.integrations.Core.UploadFile`.
+
+Security hardening:
+- Run `06_supabase_auth_and_rls.sql` after the base schema files.
+- This migration keeps `beampd_download` unchanged and adds RLS hardening for:
+  - `plugin_account`
+  - `plugin`
+  - `plugin_review`
+- It also introduces `auth_user_id` on `plugin_account` so plugin ownership can be tied to Supabase Auth users.
