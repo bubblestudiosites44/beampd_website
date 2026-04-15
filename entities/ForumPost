@@ -1,0 +1,42 @@
+{
+  "name": "ForumPost",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Forum thread title"
+    },
+    "content": {
+      "type": "string",
+      "description": "Forum thread body"
+    },
+    "category": {
+      "type": "string",
+      "description": "Forum category label"
+    },
+    "author_account_id": {
+      "type": "string",
+      "description": "UUID of plugin_account row that owns the post"
+    },
+    "author_auth_user_id": {
+      "type": "string",
+      "description": "UUID of Supabase auth.users id tied to poster"
+    },
+    "author_username": {
+      "type": "string",
+      "description": "Display username shown on the post"
+    },
+    "is_locked": {
+      "type": "boolean",
+      "description": "Optional lock toggle to prevent further edits"
+    }
+  },
+  "required": [
+    "title",
+    "content",
+    "category",
+    "author_account_id",
+    "author_auth_user_id",
+    "author_username"
+  ]
+}

@@ -29,6 +29,7 @@ export default function Navbar({ onDownloadClick }) {
           <button onClick={() => scrollTo("showcase")} className="text-sm font-body text-muted-foreground hover:text-foreground transition-colors">Showcase</button>
           <button onClick={() => scrollTo("download")} className="text-sm font-body text-muted-foreground hover:text-foreground transition-colors">Download</button>
           <Link to="/plugins" className="text-sm font-body text-muted-foreground hover:text-foreground transition-colors">Plugins</Link>
+          <Link to="/forum" className="text-sm font-body text-muted-foreground hover:text-foreground transition-colors">Forum</Link>
           <button
             onClick={onDownloadClick}
             className="px-5 py-2 bg-primary text-primary-foreground text-sm font-heading font-semibold tracking-wide rounded-lg hover:bg-primary/90 transition-all"
@@ -55,6 +56,7 @@ export default function Navbar({ onDownloadClick }) {
               <button onClick={() => scrollTo("showcase")} className="text-sm font-body text-muted-foreground hover:text-foreground transition-colors text-left">Showcase</button>
               <button onClick={() => scrollTo("download")} className="text-sm font-body text-muted-foreground hover:text-foreground transition-colors text-left">Download</button>
               <Link to="/plugins" className="text-sm font-body text-muted-foreground hover:text-foreground transition-colors text-left">Plugins</Link>
+              <Link to="/forum" className="text-sm font-body text-muted-foreground hover:text-foreground transition-colors text-left">Forum</Link>
               <button
                 onClick={onDownloadClick}
                 className="px-5 py-2 bg-primary text-primary-foreground text-sm font-heading font-semibold tracking-wide rounded-lg hover:bg-primary/90 transition-all w-full"

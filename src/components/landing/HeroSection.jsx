@@ -70,7 +70,7 @@ export default function HeroSection({ heroImage, onDownloadClick }) {
             to="/docs"
             className="flex items-center gap-2 px-8 py-4 border border-border text-foreground font-heading font-semibold text-lg tracking-wide rounded-xl hover:bg-secondary transition-all"
           >
-            LEARN MORE
+            DOCS
           </Link>
         </motion.div>
 

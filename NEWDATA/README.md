@@ -7,12 +7,14 @@ Run these files in order in the Supabase SQL editor:
 5. `04_beampd_download.sql`
 6. `05_storage_uploads_bucket.sql` (optional but needed for upload from frontend)
 7. `06_supabase_auth_and_rls.sql` (recommended hardening: Supabase Auth + RLS)
+8. `07_forum_post.sql` (forum table + RLS; requires authenticated account ownership to post)
 
 Entity-to-table mapping:
 - `PluginAccount` -> `public.plugin_account`
 - `Plugin` -> `public.plugin`
 - `PluginReview` -> `public.plugin_review`
 - `BeamPDDownload` -> `public.beampd_download`
+- `ForumPost` -> `public.forum_post`
 
 Paste-text seed files (for Supabase Table Editor -> `Add content` -> `Paste text`):
 - `paste_text_plugin_account.tsv` -> `public.plugin_account`

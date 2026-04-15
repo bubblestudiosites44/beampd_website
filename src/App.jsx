@@ -12,6 +12,7 @@ import PluginDetail from './pages/PluginDetail';
 import Docs from './pages/Docs';
 import PluginLogin from './pages/PluginLogin';
 import PublishPlugin from './pages/PublishPlugin';
+import Forum from './pages/Forum';
 // Add page imports here
 
 const CANONICAL_ORIGIN = "https://beampd.xirako.com";
@@ -82,6 +83,7 @@ const AuthenticatedApp = () => {
       <Route path="/plugins/login" element={<PluginLogin />} />
       <Route path="/plugins/publish" element={<PublishPlugin />} />
       <Route path="/docs" element={<Docs />} />
+      <Route path="/forum" element={<Forum />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
