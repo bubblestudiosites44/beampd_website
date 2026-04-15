@@ -93,6 +93,12 @@ BeamPD hooks into gameplay systems that change between BeamNG versions. Running 
     groupId: "getting-started",
     content: `## Beginner's Guide
 
+### Installing BeamPD
+1. Download the latest BeamPD: Response zip file
+2. Create a folder called \`BeamPD\` in your BeamNG mods directory.
+3. Then, put the zip file into the \`BeamPD\` folder. Do not extract the zip — it should be directly readable by BeamNG.
+4. Launch BeamNG.drive and enable the mod in the Mod Manager.
+
 ### First Session Checklist
 1. Install BeamPD and verify the mod is enabled in Mod Manager.
 2. Load into a supported map.
