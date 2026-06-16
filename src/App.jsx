@@ -13,6 +13,7 @@ import Docs from './pages/Docs';
 import PluginLogin from './pages/PluginLogin';
 import PublishPlugin from './pages/PublishPlugin';
 import Forum from './pages/Forum';
+import XirakoAuthCallback from './pages/XirakoAuthCallback';
 // Add page imports here
 
 const CANONICAL_ORIGIN = "https://beampd.xirako.com";
@@ -39,7 +40,7 @@ const RouteSeo = () => {
       el.setAttribute("href", canonicalUrl);
     });
 
-    const noIndexPaths = new Set(["/plugins/login", "/plugins/publish"]);
+    const noIndexPaths = new Set(["/plugins/login", "/plugins/publish", "/auth/xirako"]);
     const robotsContent = noIndexPaths.has(normalizedPath) ? "noindex, nofollow" : "index, follow";
 
     upsertHeadTag("meta", 'meta[name="robots"]', (el) => {
@@ -82,6 +83,7 @@ const AuthenticatedApp = () => {
       <Route path="/plugins/:id" element={<PluginDetail />} />
       <Route path="/plugins/login" element={<PluginLogin />} />
       <Route path="/plugins/publish" element={<PublishPlugin />} />
+      <Route path="/auth/xirako" element={<XirakoAuthCallback />} />
       <Route path="/docs" element={<Docs />} />
       <Route path="/forum" element={<Forum />} />
       <Route path="*" element={<PageNotFound />} />

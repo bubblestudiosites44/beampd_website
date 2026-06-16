@@ -1,6 +1,8 @@
 import { db } from "@/api/base44Client";
 
 const SESSION_KEY = "beampd_plugin_session";
+const XIRAKO_LOGIN_BASE_URL = "https://xirako.com/login";
+const XIRAKO_APP_NAME = "BeamPD";
 
 function ensureSupabase() {
   const supabase = db?.raw?.supabase;
@@ -166,6 +168,42 @@ export async function logIn(identifier, password) {
   }
 
   const profile = await ensureOwnPluginAccount(data.user);
+  writeSessionCache(profile);
+  return profile;
+}
+
+export function buildXirakoLoginUrl() {
+  const callbackUrl = new URL("/auth/xirako", window.location.origin);
+  const loginUrl = new URL(XIRAKO_LOGIN_BASE_URL);
+
+  loginUrl.searchParams.set("app", XIRAKO_APP_NAME);
+  loginUrl.searchParams.set("return_to", callbackUrl.toString());
+
+  return loginUrl.toString();
+}
+
+export async function completeXirakoLogin(hashValue) {
+  const supabase = ensureSupabase();
+  const hash = new URLSearchParams(String(hashValue || "").replace(/^#/, ""));
+  const accessToken = hash.get("xirako_access_token");
+  const refreshToken = hash.get("xirako_refresh_token");
+
+  if (!accessToken || !refreshToken) {
+    throw new Error("Missing Xirako session tokens.");
+  }
+
+  const { data, error } = await supabase.auth.setSession({
+    access_token: accessToken,
+    refresh_token: refreshToken,
+  });
+
+  if (error || !data?.user) {
+    throw new Error(error?.message || "Failed to complete Xirako sign in.");
+  }
+
+  const email = normalizeEmail(hash.get("xirako_email"));
+  const preferredUsername = email ? email.split("@")[0] : "";
+  const profile = await ensureOwnPluginAccount(data.user, preferredUsername);
   writeSessionCache(profile);
   return profile;
 }
