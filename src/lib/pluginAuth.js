@@ -22,11 +22,31 @@ function normalizeIdentifier(value) {
   return String(value || "").trim();
 }
 
+function firstNonEmptyString(values) {
+  for (const value of values) {
+    if (typeof value !== "string") continue;
+    const trimmed = value.trim();
+    if (trimmed) return trimmed;
+  }
+  return "";
+}
+
 function safeUsernameFromUser(user) {
-  const metadataUsername =
-    typeof user?.user_metadata?.username === "string"
-      ? user.user_metadata.username.trim()
-      : "";
+  const identityData =
+    Array.isArray(user?.identities) && user.identities.length > 0
+      ? user.identities[0]?.identity_data
+      : null;
+
+  const metadataUsername = firstNonEmptyString([
+    user?.user_metadata?.username,
+    user?.user_metadata?.display_name,
+    user?.user_metadata?.name,
+    user?.user_metadata?.full_name,
+    identityData?.username,
+    identityData?.display_name,
+    identityData?.name,
+    identityData?.full_name,
+  ]);
   if (metadataUsername) return metadataUsername;
 
   const email = normalizeEmail(user?.email);
@@ -201,9 +221,7 @@ export async function completeXirakoLogin(hashValue) {
     throw new Error(error?.message || "Failed to complete Xirako sign in.");
   }
 
-  const email = normalizeEmail(hash.get("xirako_email"));
-  const preferredUsername = email ? email.split("@")[0] : "";
-  const profile = await ensureOwnPluginAccount(data.user, preferredUsername);
+  const profile = await ensureOwnPluginAccount(data.user);
   writeSessionCache(profile);
   return profile;
 }
