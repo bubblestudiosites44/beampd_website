@@ -1,0 +1,33 @@
+{
+  "name": "ForumReply",
+  "type": "object",
+  "properties": {
+    "post_id": {
+      "type": "string",
+      "description": "UUID of the forum thread this reply belongs to"
+    },
+    "content": {
+      "type": "string",
+      "description": "Reply body"
+    },
+    "author_account_id": {
+      "type": "string",
+      "description": "UUID of the plugin_account row that owns the reply"
+    },
+    "author_auth_user_id": {
+      "type": "string",
+      "description": "UUID of the authenticated Supabase user"
+    },
+    "author_username": {
+      "type": "string",
+      "description": "Display username shown with the reply"
+    }
+  },
+  "required": [
+    "post_id",
+    "content",
+    "author_account_id",
+    "author_auth_user_id",
+    "author_username"
+  ]
+}

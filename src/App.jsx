@@ -13,6 +13,7 @@ import Docs from './pages/Docs';
 import PluginLogin from './pages/PluginLogin';
 import PublishPlugin from './pages/PublishPlugin';
 import Forum from './pages/Forum';
+import ForumThread from './pages/ForumThread';
 import XirakoAuthCallback from './pages/XirakoAuthCallback';
 // Add page imports here
 
@@ -86,6 +87,7 @@ const AuthenticatedApp = () => {
       <Route path="/auth/xirako" element={<XirakoAuthCallback />} />
       <Route path="/docs" element={<Docs />} />
       <Route path="/forum" element={<Forum />} />
+      <Route path="/forum/:id" element={<ForumThread />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

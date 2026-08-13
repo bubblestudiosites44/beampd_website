@@ -6,7 +6,6 @@ import {
   ChevronRight,
   ChevronDown,
   Search,
-  Clock,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
@@ -16,11 +15,8 @@ const DOC_GROUPS = [
     id: "getting-started",
     title: "Getting Started",
     sectionIds: [
-      "purchasing-beamng-drive",
-      "updating-the-game",
       "beginners-guide",
       "user-interface",
-      "replay",
     ],
   },
   {
@@ -30,7 +26,6 @@ const DOC_GROUPS = [
       "dispatch-callouts",
       "backup-and-units",
       "pursuit-management",
-      "traffic-stops",
     ],
   },
   {
@@ -52,41 +47,6 @@ const DOC_GROUPS = [
 ];
 
 const DOC_SECTIONS = [
-  {
-    id: "purchasing-beamng-drive",
-    title: "Purchasing BeamNG.drive",
-    groupId: "getting-started",
-    content: `## Purchasing BeamNG.drive
-
-BeamPD: Response requires a legal copy of BeamNG.drive.
-
-### Where to Buy
-1. Open Steam and search for \`BeamNG.drive\`.
-2. Purchase and install the game.
-3. Launch it once before installing BeamPD.
-
-### Recommended Baseline
-- BeamNG.drive current public release
-- 16 GB RAM or higher
-- SSD storage for faster mod loading
-`,
-  },
-  {
-    id: "updating-the-game",
-    title: "Updating the game",
-    groupId: "getting-started",
-    content: `## Updating the game
-
-### Steam Update Check
-1. Open Steam Library.
-2. Right-click BeamNG.drive -> \`Properties\`.
-3. In \`Updates\`, keep automatic updates enabled.
-4. Restart Steam if a pending update is stuck.
-
-### Why This Matters
-BeamPD hooks into gameplay systems that change between BeamNG versions. Running old builds can break callouts, UI bindings, or plugin behavior.
-`,
-  },
   {
     id: "beginners-guide",
     title: "Beginner's Guide",
@@ -138,21 +98,6 @@ BeamPD ships a backup app at:
 
 The app also triggers a ready handshake with:
 \`BeamPD_main.BeamPD_uiReady()\` (or falls back to \`extensions.hook('BeamPD_uiReady')\`).
-`,
-  },
-  {
-    id: "replay",
-    title: "Replay",
-    groupId: "getting-started",
-    content: `## Replay
-
-### Quick Workflow
-1. Run your callout session.
-2. Save replay from BeamNG's replay system.
-3. Review pursuit tactics, stopping distance, and route choices.
-
-### Why Replay Helps
-It is the fastest way to debug your own driving line, interception timing, and scene safety.
 `,
   },
   {
@@ -223,16 +168,6 @@ A pursuit starts automatically when a suspect accelerates away during a callout.
 
 ### How Pursuit Ends
 - Arrest, release, evade, destroyed target, or explicit callout end.
-`,
-  },
-  {
-    id: "traffic-stops",
-    title: "Traffic Stops",
-    groupId: "gameplay-systems",
-    comingSoon: true,
-    content: `## Traffic Stops
-
-This section is being expanded with full stop procedure examples and plugin extension points.
 `,
   },
   {
@@ -708,25 +643,11 @@ export default function Docs() {
           transition={{ duration: 0.25 }}
           className="flex-1 min-w-0"
         >
-          {currentSection.comingSoon ? (
-            <div className="rounded-2xl bg-card border border-border p-8 md:p-10 flex flex-col items-center justify-center gap-4 py-24">
-              <div className="w-16 h-16 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center">
-                <Clock className="w-8 h-8 text-yellow-400" />
-              </div>
-              <h2 className="font-heading text-3xl font-bold text-foreground">
-                {currentSection.title}
-              </h2>
-              <p className="font-body text-muted-foreground text-center max-w-sm">
-                This section is coming soon. Check back later for full documentation.
-              </p>
-            </div>
-          ) : (
-            <div className="rounded-2xl bg-card border border-border p-8 md:p-10">
-              <ReactMarkdown components={mdComponents}>
-                {currentSection.content}
-              </ReactMarkdown>
-            </div>
-          )}
+          <div className="rounded-2xl bg-card border border-border p-8 md:p-10">
+            <ReactMarkdown components={mdComponents}>
+              {currentSection.content}
+            </ReactMarkdown>
+          </div>
         </motion.main>
       </div>
     </div>

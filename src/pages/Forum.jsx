@@ -1,6 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Shield, ArrowLeft, MessageSquare, Search, LogIn, LogOut, Loader2 } from "lucide-react";
+import {
+  Shield,
+  ArrowLeft,
+  ArrowRight,
+  MessageCircle,
+  MessageSquare,
+  Search,
+  LogIn,
+  LogOut,
+  Loader2,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { db } from "@/api/base44Client";
 import { getSession, hydrateSession, logOut } from "@/lib/pluginAuth";
@@ -28,6 +38,7 @@ export default function Forum() {
   const [session, setSession] = useState(getSession());
   const [loadingSession, setLoadingSession] = useState(true);
   const [posts, setPosts] = useState([]);
+  const [replyCounts, setReplyCounts] = useState({});
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [search, setSearch] = useState("");
@@ -65,8 +76,17 @@ export default function Forum() {
     setLoadingPosts(true);
     setLoadError("");
     try {
-      const data = await db.entities.ForumPost.filter({}, "-created_date", 200);
-      setPosts(Array.isArray(data) ? data : []);
+      const [postData, replyData] = await Promise.all([
+        db.entities.ForumPost.filter({}, "-created_date", 200),
+        db.entities.ForumReply.filter({}, "created_date", 1000),
+      ]);
+      setPosts(Array.isArray(postData) ? postData : []);
+      setReplyCounts(
+        (Array.isArray(replyData) ? replyData : []).reduce((counts, reply) => {
+          counts[reply.post_id] = (counts[reply.post_id] || 0) + 1;
+          return counts;
+        }, {})
+      );
     } catch (error) {
       console.error("Failed to load forum posts:", error);
       setLoadError("Could not load forum posts from the database.");
@@ -345,9 +365,10 @@ export default function Forum() {
             ) : (
               <div className="flex flex-col gap-4">
                 {filteredPosts.map((post) => (
-                  <article
+                  <Link
                     key={post.id}
-                    className="rounded-2xl bg-card border border-border p-6 hover:border-primary/40 transition-colors"
+                    to={`/forum/${post.id}`}
+                    className="group block rounded-2xl bg-card border border-border p-6 hover:border-primary/50 hover:bg-secondary/20 transition-all"
                   >
                     <div className="flex items-center gap-2 mb-2">
                       <span className="px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-body font-medium text-primary">
@@ -370,7 +391,17 @@ export default function Forum() {
                         {post.author_username || "Unknown"}
                       </span>
                     </p>
-                  </article>
+                    <div className="mt-5 pt-4 border-t border-border flex items-center justify-between">
+                      <span className="flex items-center gap-1.5 text-xs font-body text-muted-foreground">
+                        <MessageCircle className="w-4 h-4" />
+                        {replyCounts[post.id] || 0} {(replyCounts[post.id] || 0) === 1 ? "reply" : "replies"}
+                      </span>
+                      <span className="flex items-center gap-1.5 text-sm font-heading font-semibold text-primary">
+                        View thread
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </span>
+                    </div>
+                  </Link>
                 ))}
               </div>
             )}

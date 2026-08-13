@@ -22,6 +22,7 @@ const ENTITY_TABLE_MAP = {
   PluginAccount: "plugin_account",
   BeamPDDownload: "beampd_download",
   ForumPost: "forum_post",
+  ForumReply: "forum_reply",
 };
 
 function toTableName(entityName) {
