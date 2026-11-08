@@ -55,7 +55,7 @@ function compareVersions(left, right) {
 }
 
 export default {
-  async fetch(request) {
+  async fetch(request, env = process.env) {
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: JSON_HEADERS });
     }
@@ -63,8 +63,11 @@ export default {
       return jsonResponse({ error: "Method not allowed" }, 405);
     }
 
-    const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-    const anonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+    const supabaseUrl = env.SUPABASE_URL || env.VITE_SUPABASE_URL;
+    const anonKey =
+      env.SUPABASE_PUBLISHABLE_KEY ||
+      env.SUPABASE_ANON_KEY ||
+      env.VITE_SUPABASE_ANON_KEY;
     if (!supabaseUrl || !anonKey) {
       return jsonResponse({ error: "Version service is not configured" }, 503);
     }
@@ -79,12 +82,16 @@ export default {
         limit: "100",
       }).toString();
 
+      const supabaseHeaders = {
+        apikey: anonKey,
+        Accept: "application/json",
+      };
+      if (!anonKey.startsWith("sb_publishable_")) {
+        supabaseHeaders.Authorization = `Bearer ${anonKey}`;
+      }
+
       const response = await fetch(tableUrl, {
-        headers: {
-          apikey: anonKey,
-          Authorization: `Bearer ${anonKey}`,
-          Accept: "application/json",
-        },
+        headers: supabaseHeaders,
         signal: AbortSignal.timeout(8000),
       });
 

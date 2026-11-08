@@ -30,4 +30,9 @@ Requirements:
 
 The version response is generated from active, non-coming-soon rows in Supabase `public.beampd_download`. It is cached for up to five minutes at the CDN, so allow that delay after publishing a release.
 
-For the endpoint to run on Vercel, configure `SUPABASE_URL` and `SUPABASE_ANON_KEY` in the project's environment settings. The function also accepts the existing `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` names. Use only the public anon/publishable key; never put a Supabase service-role or secret key in this endpoint.
+For Cloudflare Pages, the route is implemented by `functions/beampd-version.json.js`. Configure these runtime variables under **Settings > Variables and Secrets** for Production (and Preview if you test previews), then redeploy:
+
+- `SUPABASE_URL`: the Supabase project URL.
+- `SUPABASE_PUBLISHABLE_KEY`: the Supabase publishable key. The legacy `SUPABASE_ANON_KEY` and `VITE_SUPABASE_ANON_KEY` names are also accepted.
+
+Use only a public anon/publishable key; never put a Supabase service-role or secret key in this endpoint. Once deployed, verify the route responds with `Content-Type: application/json` and a `latest_version` field.
